@@ -18,6 +18,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.7</java.version>
+        <!-- lib version-->
+        <spring.boot.version>1.5.10.RELEASE</spring.boot.version>
+        <http.components.version>4.5.3</http.components.version>
+        <guava.version>17.0</guava.version>
+        <fastjson.version>1.2.33</fastjson.version>
     </properties>
 
     <modules>
@@ -33,21 +38,18 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-tomcat</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>${spring.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-freemarker</artifactId>
+                <version>${spring.boot.version}</version>
             </dependency>
             <!--外部tomcat-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-tomcat</artifactId>
+                <version>${spring.boot.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -57,14 +59,15 @@
             <!-- redis -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-redis</artifactId>
-                <version>1.4.6.RELEASE</version>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring.boot.version}</version>
             </dependency>
-            <!--httpclient-->
+
+            <!-- httpclient -->
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.3</version>
+                <version>${http.components.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -75,8 +78,9 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
-                <version>4.5.3</version>
+                <version>${http.components.version}</version>
             </dependency>
+            <!-- httpclient END-->
 
             <dependency>
                 <groupId>p6spy</groupId>
@@ -88,7 +92,7 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
-                <version>1.2.33</version>
+                <version>${fastjson.version}</version>
             </dependency>
 
             <!-- common libs-->
@@ -110,10 +114,8 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>17.0</version>
+                <version>${guava.version}</version>
             </dependency>
-
-
         </dependencies>
 
     </dependencyManagement>
@@ -122,9 +124,9 @@
     <repositories>
 
         <repository>
-            <id>oschina-repos</id>
-            <name>Oschina Releases</name>
-            <url>http://maven.oschina.net/content/groups/public</url>
+            <id>nexus-aliyun</id>
+            <name>Nexus aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </repository>
 
         <repository>
