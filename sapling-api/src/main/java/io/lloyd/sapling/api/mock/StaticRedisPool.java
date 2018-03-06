@@ -1,5 +1,6 @@
 package io.lloyd.sapling.api.mock;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -25,4 +26,9 @@ public class StaticRedisPool {
 		return pool;
 	}
 
+	public static void doOnce(String kv) {
+		Jedis jedis = StaticRedisPool.getPool().getResource();
+		jedis.set(kv, kv);
+		jedis.close();
+	}
 }

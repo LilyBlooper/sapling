@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.lloyd.sapling.api.mock.threads.JedisGetThread;
+import io.lloyd.sapling.api.mock.threads.StaticJedisGetThread;
 
 /**
  * benchmark 控制器，进行redis的相关压测 </br>
@@ -28,7 +29,7 @@ public class RedisBenchmarkController {
 		long startTime = 0;
 		try {
 			for (int i = 0; i < threadSize; i++) {
-				pool.submit(new JedisGetThread(round, mainLatch, workerLatch, "苦工" + i));
+				pool.submit(new JedisGetThread(round, mainLatch, workerLatch, "worker" + i));
 			}
 			startTime = System.nanoTime();
 			mainLatch.countDown();
@@ -43,4 +44,56 @@ public class RedisBenchmarkController {
 		}
 	}
 
+	@RequestMapping("test3")
+	public String benchmark3() {
+		// 使用固定个数的线程进行redis get测试 （static 方法）
+		int threadSize = 16;
+		int round = 10000;
+		ExecutorService pool = Executors.newFixedThreadPool(threadSize);
+		CountDownLatch mainLatch = new CountDownLatch(1);
+		CountDownLatch workerLatch = new CountDownLatch(threadSize);
+		long startTime = 0;
+		try {
+			for (int i = 0; i < threadSize; i++) {
+				pool.submit(new StaticJedisGetThread(round, mainLatch, workerLatch, "worker" + i));
+			}
+			startTime = System.nanoTime();
+			mainLatch.countDown();
+			workerLatch.await();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			long endTime = System.nanoTime();
+			long elapsed = (endTime - startTime) / 1000 / 1000;
+			pool.shutdown();
+			return "ok,costs: " + elapsed + "millis";
+		}
+	}
+
+
+	@RequestMapping("test4")
+	public String benchmark4() {
+		// 使用固定个数的线程进行redis get测试 （一次连接）
+		int threadSize = 16;
+		int round = 10000;
+		ExecutorService pool = Executors.newFixedThreadPool(threadSize);
+		CountDownLatch mainLatch = new CountDownLatch(1);
+		CountDownLatch workerLatch = new CountDownLatch(threadSize);
+		long startTime = 0;
+		try {
+			for (int i = 0; i < threadSize; i++) {
+				pool.submit(new StaticJedisGetThread(round, mainLatch, workerLatch, "worker" + i));
+			}
+			startTime = System.nanoTime();
+			mainLatch.countDown();
+			workerLatch.await();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			long endTime = System.nanoTime();
+			long elapsed = (endTime - startTime) / 1000 / 1000;
+			pool.shutdown();
+			return "ok,costs: " + elapsed + "millis";
+		}
+	}
 }

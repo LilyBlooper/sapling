@@ -11,15 +11,15 @@ import redis.clients.jedis.Jedis;
  * 简单的进行Jedis的get操作<br/>
  * Created by LilyBlooper(lilyblooper@163.com) on 2018/3/5.
  */
-public class JedisGetThread implements Runnable {
+public class OneConnectionJedisGetThread implements Runnable {
 
 	private int round;
 	private String name;
 	private CountDownLatch startLatch;
 	private CountDownLatch workerLatch;
 
-	public JedisGetThread(int round, CountDownLatch startLatch, CountDownLatch workerLatch,
-			String name) {
+	public OneConnectionJedisGetThread(int round, CountDownLatch startLatch,
+			CountDownLatch workerLatch, String name) {
 		this.round = round;
 		this.startLatch = startLatch;
 		this.workerLatch = workerLatch;
@@ -31,9 +31,11 @@ public class JedisGetThread implements Runnable {
 		List<String> kvList = genKV();
 		try {
 			startLatch.await();
+			Jedis jedis = StaticRedisPool.getPool().getResource();
 			for (int i = 0; i < round; i++) {
-				doOnce(kvList.get(i));
+				jedis.set(kvList.get(i), kvList.get(i));
 			}
+			jedis.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -52,12 +54,6 @@ public class JedisGetThread implements Runnable {
 			kvList.add(name + ":" + i);
 		}
 		return kvList;
-	}
-
-	private void doOnce(String kv) {
-		Jedis jedis = StaticRedisPool.getPool().getResource();
-		jedis.set(kv, kv);
-		jedis.close();
 	}
 
 }
